@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Board Game</title>
+    <title>Callisto</title>
     <style>
       .container {
         text-align: center;
@@ -27,6 +27,21 @@
       .blue {
         background-color: blue;
       }
+      .piece {
+        background-color: red; /* Customize the piece color as desired */
+        width: 20px;
+        height: 20px;
+      }
+      .hovering {
+        background-color: rgba(
+          255,
+          0,
+          0,
+          0.5
+        ); /* Customize the translucent piece color and transparency as desired */
+        width: 20px;
+        height: 20px;
+      }
     </style>
   </head>
   <body>
@@ -37,8 +52,8 @@
           / 2 - 3 and row <= 20 / 2 + 2 and col >= 20 / 2 - 3 and col <= 20 / 2
           + 2 and 20 / 2 - 1 - row + 20 / 2 - 1 - col <= 2 and 20 / 2 - 1 - row
           + col - 20 / 2 <= 2 and row - 20 / 2 + 20 / 2 - 1 - col <= 2 and row -
-          20 / 2 + col - 20 / 2 <= 2 or row + col <= 6 or (row >= 20 - 7 and col
-          <= row - 20 + 7) or row + col >= 32 or (row <= 6 and col >= 13 and col
+          20 / 2 + col - 20 / 2 <= 2 or row + col <= 6 or (row >= 20 - 6 and col
+          <= row - 20 + 6) or row + col >= 32 or (row <= 6 and col >= 13 and col
           - row >= 13) %}
           <div class="cell blue" id="{{ row }}_{{ col }}"></div>
           {% else %}
@@ -49,10 +64,29 @@
     </div>
     <script>
       const cells = document.querySelectorAll(".cell");
+      let isPlacingPiece = false; // Flag to indicate if a piece is being placed
+      let isHovering = null;
 
       cells.forEach((cell) => {
+        cell.addEventListener("mouseenter", () => {
+          if (!isPlacingPiece && !cell.classList.contains("piece")) {
+            isHovering = document.createElement("div");
+            isHovering.classList.add("hovering");
+            cell.appendChild(isHovering);
+          }
+        });
+
+        cell.addEventListener("mouseleave", () => {
+          if (isHovering) {
+            cell.removeChild(isHovering);
+            isHovering = null;
+          }
+        });
+
         cell.addEventListener("click", () => {
-          console.log(cell.id);
+          if (!isPlacingPiece && !cell.classList.contains("piece")) {
+            cell.classList.add("piece");
+          }
         });
       });
     </script>
