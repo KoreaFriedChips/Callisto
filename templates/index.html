@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Board Game</title>
+    <style>
+      .container {
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .board {
+        display: grid;
+        grid-template-columns: repeat(20, 1fr);
+        grid-template-rows: repeat(20, 1fr);
+        background-color: #000;
+        width: 400px; /* Optional: Adjust the width as per your preference */
+        height: 400px; /* Optional: Adjust the height as per your preference */
+      }
+      .cell {
+        width: 20px;
+        height: 20px;
+        background-color: #fff;
+        border: 1px solid #000; /* Add border to create grid lines */
+      }
+      .blue {
+        background-color: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="board">
+        <div class="board">
+          {% for row in range(20) %} {% for col in range(20) %} {% if row >= 20
+          / 2 - 3 and row <= 20 / 2 + 2 and col >= 20 / 2 - 3 and col <= 20 / 2
+          + 2 and 20 / 2 - 1 - row + 20 / 2 - 1 - col <= 2 and 20 / 2 - 1 - row
+          + col - 20 / 2 <= 2 and row - 20 / 2 + 20 / 2 - 1 - col <= 2 and row -
+          20 / 2 + col - 20 / 2 <= 2 or row + col <= 6 or (row >= 20 - 6 and col
+          <= row - 20 + 6) or row + col >= 32 or (row <= 6 and col >= 13 and col
+          - row >= 13) %}
+          <div class="cell blue" id="{{ row }}_{{ col }}"></div>
+          {% else %}
+          <div class="cell" id="{{ row }}_{{ col }}"></div>
+          {% endif %} {% endfor %} {% endfor %}
+        </div>
+      </div>
+    </div>
+    <script>
+      const cells = document.querySelectorAll(".cell");
+
+      cells.forEach((cell) => {
+        cell.addEventListener("click", () => {
+          console.log(cell.id);
+        });
+      });
+    </script>
+  </body>
+</html>
