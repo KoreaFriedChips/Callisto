@@ -6,6 +6,7 @@
       .container {
         text-align: center;
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         height: 100vh;
@@ -42,50 +43,243 @@
         width: 20px;
         height: 20px;
       }
+      .button-container {
+        margin-top: 4rem;
+      }
+      .button-container button {
+        margin: 1rem;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      .button-container button:hover {
+        background-color: #45a049;
+      }
     </style>
   </head>
   <body>
     <div class="container">
+      <h1>Callisto</h1>
       <div class="board">
-        <div class="board">
-          {% for row in range(20) %} {% for col in range(20) %} {% if row >= 20
-          / 2 - 3 and row <= 20 / 2 + 2 and col >= 20 / 2 - 3 and col <= 20 / 2
-          + 2 and 20 / 2 - 1 - row + 20 / 2 - 1 - col <= 2 and 20 / 2 - 1 - row
-          + col - 20 / 2 <= 2 and row - 20 / 2 + 20 / 2 - 1 - col <= 2 and row -
-          20 / 2 + col - 20 / 2 <= 2 or row + col <= 6 or (row >= 20 - 6 and col
-          <= row - 20 + 6) or row + col >= 32 or (row <= 6 and col >= 13 and col
-          - row >= 13) %}
-          <div class="cell blue" id="{{ row }}_{{ col }}"></div>
-          {% else %}
-          <div class="cell" id="{{ row }}_{{ col }}"></div>
-          {% endif %} {% endfor %} {% endfor %}
+        {% for row in range(20) %} {% for col in range(20) %} {% if row >= 20 /
+        2 - 3 and row <= 20 / 2 + 2 and col >= 20 / 2 - 3 and col <= 20 / 2 + 2
+        and 20 / 2 - 1 - row + 20 / 2 - 1 - col <= 2 and 20 / 2 - 1 - row + col
+        - 20 / 2 <= 2 and row - 20 / 2 + 20 / 2 - 1 - col <= 2 and row - 20 / 2
+        + col - 20 / 2 <= 2 or row + col <= 6 or (row >= 20 - 6 and col <= row -
+        20 + 6) or row + col >= 32 or (row <= 6 and col >= 13 and col - row >=
+        13) %}
+        <div class="cell blue" id="{{ row }}_{{ col }}"></div>
+        {% else %}
+        <div class="cell" id="{{ row }}_{{ col }}"></div>
+        {% endif %} {% endfor %} {% endfor %}
+      </div>
+      <div class="button-container">
+        <div>
+          <button onclick="togglePiece(1)">W Piece</button>
+          <button onclick="togglePiece(2)">+ Piece</button>
+          <button onclick="togglePiece(3)">T Piece</button>
+          <button onclick="togglePiece(4)">U Piece</button>
+          <button onclick="togglePiece(5)">L Piece</button>
+          <button onclick="togglePiece(6)">Short T Piece</button>
+          <button onclick="togglePiece(7)">Z Piece</button>
+          <button onclick="togglePiece(8)">Square Piece</button>
+          <button onclick="togglePiece(9)">Turn Piece</button>
+          <button onclick="togglePiece(10)">1 x 2</button>
+          <button onclick="togglePiece(11)">1 x 3</button>
+          <button onclick="togglePiece(12)">New Base</button>
+        </div>
+        <div>
+          <button onclick="rotateRight()">Rotate Right ↻</button>
+          <button onclick="rotateLeft()">Rotate Left ↺</button>
         </div>
       </div>
     </div>
     <script>
+      let pieces = [
+        [1, false],
+        [2, false],
+        [3, false],
+        [4, false],
+        [5, false],
+        [6, false],
+        [7, false],
+        [8, false],
+        [9, false],
+        [10, false],
+        [11, false],
+        [12, false],
+      ];
+      function togglePiece(num) {
+        pieces.forEach(([piece, show], index) => {
+          pieces[index][1] = piece === num;
+        });
+      }
+      function getPieceShape(piece, rotation, centerX, centerY) {
+        const cellsAround = [
+          [
+            document.getElementById(`${centerX - 1}_${centerY - 1}`), // top left
+            document.getElementById(`${centerX - 1}_${centerY}`), // top mid
+            document.getElementById(`${centerX - 1}_${centerY + 1}`), // top right
+          ],
+          [
+            document.getElementById(`${centerX}_${centerY - 1}`), // mid left
+            null,
+            document.getElementById(`${centerX}_${centerY + 1}`), // mid right
+          ],
+          [
+            document.getElementById(`${centerX + 1}_${centerY - 1}`), // bot left
+            document.getElementById(`${centerX + 1}_${centerY}`), // bot mid
+            document.getElementById(`${centerX + 1}_${centerY + 1}`), // bot right
+          ],
+        ];
+
+        let cellShape = [];
+        switch (piece) {
+          case 1:
+            break;
+          case 2:
+            cellShape = [
+              cellsAround[0][1],
+              cellsAround[1][0],
+              cellsAround[1][2],
+              cellsAround[2][1],
+            ];
+            break;
+          case 3:
+            break;
+          case 4:
+            break;
+          case 5:
+            break;
+          case 6:
+            break;
+          case 7:
+            break;
+          case 8:
+            break;
+          case 9:
+            break;
+          case 10:
+            cellShape = [cellsAround[Math.abs(1 - rotation)][rotation]];
+            if (rotation === 3)
+              cellShape = [cellsAround[Math.abs(1 - rotation)][1]];
+            break;
+          case 11:
+            break;
+          case 12:
+            break;
+          default:
+            null;
+        }
+
+        return cellShape;
+      }
+
+      let rotate = 0;
+      function rotateRight() {
+        rotate = (rotate + 1) % 4;
+      }
+      function rotateLeft() {
+        rotate--;
+        if (rotate < 0) rotate = 3;
+      }
+
       const cells = document.querySelectorAll(".cell");
-      let isPlacingPiece = false; // Flag to indicate if a piece is being placed
-      let isHovering = null;
+      let isPlacingPiece = false;
+
+      function highlightCellAndSurrounding(cell) {
+        // console.log(cell.id);
+        const isHovering = document.createElement("div");
+        const hoverId = "hover_" + cell.id; // Unique identifier for each hover element
+        isHovering.classList.add("hovering");
+        isHovering.setAttribute("data-hover-id", hoverId);
+        cell.appendChild(isHovering);
+        const [centerX, centerY] = cell.id.split("_").map(Number);
+        let cellShape = [];
+        pieces.forEach(([piece, show]) => {
+          // console.log(piece + " " + show);
+          if (show) {
+            cellShape = getPieceShape(piece, rotate, centerX, centerY);
+          }
+        });
+        cellShape.forEach((cell) => {
+          if (cell) {
+            const hoverDiv = document.createElement("div");
+            hoverDiv.classList.add("hovering");
+            hoverDiv.setAttribute("data-hover-id", hoverId);
+            cell.appendChild(hoverDiv);
+          }
+        });
+      }
+
+      function removeHighlightFromCellAndSurrounding(cell) {
+        const hoverId = "hover_" + cell.id; // Get the unique identifier for the hover element
+        const hoverElements = document.querySelectorAll(
+          `[data-hover-id="${hoverId}"]`
+        );
+
+        hoverElements.forEach((hoverElement) => {
+          if (hoverElement && hoverElement.parentNode) {
+            hoverElement.parentNode.removeChild(hoverElement);
+          }
+        });
+      }
+
+      function placePiece(cell) {
+        const hoverId = "hover_" + cell.id; // Get the unique identifier for the hover element
+        const hoverElements = document.querySelectorAll(
+          `[data-hover-id="${hoverId}"]`
+        );
+
+        hoverElements.forEach((hoverElement) => {
+          if (hoverElement && hoverElement.parentNode) {
+            hoverElement.parentNode.removeChild(hoverElement);
+            hoverElement.classList.add("piece");
+            isPlacingPiece = true;
+          }
+        });
+        isPlacingPiece = false;
+      }
 
       cells.forEach((cell) => {
         cell.addEventListener("mouseenter", () => {
+          // console.log("enter: " + cell.id);
           if (!isPlacingPiece && !cell.classList.contains("piece")) {
-            isHovering = document.createElement("div");
-            isHovering.classList.add("hovering");
-            cell.appendChild(isHovering);
+            highlightCellAndSurrounding(cell);
           }
         });
 
         cell.addEventListener("mouseleave", () => {
-          if (isHovering) {
-            cell.removeChild(isHovering);
-            isHovering = null;
+          if (isPlacingPiece) {
+            return;
           }
+          removeHighlightFromCellAndSurrounding(cell);
         });
 
         cell.addEventListener("click", () => {
           if (!isPlacingPiece && !cell.classList.contains("piece")) {
             cell.classList.add("piece");
+            const [centerX, centerY] = cell.id.split("_").map(Number);
+            let cellShape = [];
+            pieces.forEach(([piece, show]) => {
+              // console.log(piece + " " + show);
+              if (show) {
+                cellShape = getPieceShape(piece, rotate, centerX, centerY);
+              }
+            });
+            cellShape.forEach((cell) => {
+              if (cell) {
+                cell.classList.add("piece");
+              }
+            });
           }
         });
       });
