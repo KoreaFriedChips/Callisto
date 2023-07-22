@@ -9,7 +9,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        height: 100vh;
+        height: 150vh;
       }
       .board {
         display: grid;
@@ -39,19 +39,19 @@
         background-color: red;
       }
       .player-two {
-        background-color: lightgreen;
+        background-color: rgb(15, 255, 2);
       }
       .player-three {
-        background-color: yellow;
+        background-color: rgb(0, 247, 255);
       }
       .player-four {
-        background-color: purple;
+        background-color: rgb(255, 132, 0);
       }
       .hovering {
         background-color: rgba(
-          255,
-          0,
-          0,
+          57,
+          136,
+          205,
           0.5
         ); /* Customize the translucent piece color and transparency as desired */
         width: 20px;
@@ -74,7 +74,7 @@
         transition: background-color 0.3s ease;
       }
       .button-container button:hover {
-        background-color: #45a049;
+        box-shadow: 0 0.7em 0.7em -0.6em rgba(0, 0, 0, 0.5);
       }
     </style>
   </head>
@@ -112,11 +112,11 @@
           <button class="player-one" onclick="togglePiece('Turn')">
             Turn (2)
           </button>
-          <button class="player-one" onclick="togglePiece('1x2')">
-            1x2 (2)
-          </button>
           <button class="player-one" onclick="togglePiece('1x3')">
             1x3 (2)
+          </button>
+          <button class="player-one" onclick="togglePiece('1x2')">
+            1x2 (2)
           </button>
           <button class="player-one" onclick="togglePiece('New Base')">
             New Base (3)
@@ -129,6 +129,43 @@
           <button class="player-one" onclick="rotateLeft()">
             Rotate Left ↺
           </button>
+          <button class="player-one" onclick="flip()">Flip</button>
+        </div>
+        <div>
+          <h2>Instructions</h2>
+          <p>
+            The board is a 20×20 board removing the corners (dark blue) such
+            that an octagon with a top edge of size six remains. The pieces are
+            a subset of the polyominoes up to size five. They include three 1×1
+            pieces per player that play a special role. The 1×1 pieces may be
+            placed anywhere on the board apart from the center of the board
+            (blue). The center consists of an octagon with width six and top
+            edge size two. The first two moves of a player must use a 1×1 piece,
+            the third 1×1 piece may be played anytime later. All larger pieces
+            may be placed anywhere on the board but must touch an existing piece
+            of the same color edge-to-edge. The score of a color is the number
+            of squares on the board occupied by the color not counting 1×1
+            pieces.
+          </p>
+          <p>
+            1. The first phase consists going in order placing your first base
+            (it must be placed on a white square)
+          </p>
+          <p>
+            2. The first phase consists going in order placing your second base
+            (it must be placed on a white square)
+          </p>
+          <p>
+            3. Now you are able to place any piece on the board so long as you
+            have the piece in your inventory, your piece is in bounds, and it
+            touches a piece of the same colour adjacentyly (up, down, left,
+            right, no diagonals);
+          </p>
+          <p>
+            4. The player that occupies the most squares after no one can play
+            anymore wins
+          </p>
+          <p>5. Have fun!</p>
         </div>
       </div>
     </div>
@@ -147,8 +184,8 @@
         ["Z", false, 2, 2, 2, 2],
         ["Square", false, 2, 2, 2, 2],
         ["Turn", false, 2, 2, 2, 2],
-        ["1x2", false, 2, 2, 2, 2],
         ["1x3", false, 2, 2, 2, 2],
+        ["1x2", false, 2, 2, 2, 2],
         ["New Base", true, 3, 3, 3, 3],
       ];
       function togglePiece(name) {
@@ -195,6 +232,13 @@
               cellsAround[N - 1 - i][N - 1 - j] = cellsAround[j][N - 1 - i];
               cellsAround[j][N - 1 - i] = temp;
             }
+          }
+        }
+        if (flipPiece) {
+          for (i = 0; i <= 2; i++) {
+            var temp = cellsAround[i][0];
+            cellsAround[i][0] = cellsAround[i][2];
+            cellsAround[i][2] = temp;
           }
         }
 
@@ -263,10 +307,10 @@
           case "Turn":
             cellShape = [cellsAround[0][1], cellsAround[1][2]];
             break;
-          case "1x2":
+          case "1x3":
             cellShape = [cellsAround[0][1], cellsAround[2][1]];
             break;
-          case "1x3":
+          case "1x2":
             cellShape = [cellsAround[1][0]];
             break;
           case "New Base":
@@ -279,12 +323,16 @@
       }
 
       let rotate = 0;
+      let flipPiece = false;
       function rotateRight() {
         rotate--;
         if (rotate < 0) rotate = 3;
       }
       function rotateLeft() {
         rotate = (rotate + 1) % 4;
+      }
+      function flip() {
+        flipPiece = !flipPiece;
       }
 
       const cells = document.querySelectorAll(".cell");
