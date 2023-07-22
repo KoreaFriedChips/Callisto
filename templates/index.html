@@ -28,6 +28,9 @@
       .blue {
         background-color: blue;
       }
+      .dark-blue {
+        background-color: darkblue;
+      }
       .piece {
         background-color: red; /* Customize the piece color as desired */
         width: 20px;
@@ -73,28 +76,29 @@
         2 - 3 and row <= 20 / 2 + 2 and col >= 20 / 2 - 3 and col <= 20 / 2 + 2
         and 20 / 2 - 1 - row + 20 / 2 - 1 - col <= 2 and 20 / 2 - 1 - row + col
         - 20 / 2 <= 2 and row - 20 / 2 + 20 / 2 - 1 - col <= 2 and row - 20 / 2
-        + col - 20 / 2 <= 2 or row + col <= 6 or (row >= 20 - 6 and col <= row -
-        20 + 6) or row + col >= 32 or (row <= 6 and col >= 13 and col - row >=
-        13) %}
+        + col - 20 / 2 <= 2 %}
         <div class="cell blue" id="{{ row }}_{{ col }}"></div>
+        {% elif row + col <= 6 or (row >= 20 - 6 and col <= row - 20 + 6) or row
+        + col >= 32 or (row <= 6 and col >= 13 and col - row >= 13)%}
+        <div class="cell dark-blue" id="{{ row }}_{{ col }}"></div>
         {% else %}
         <div class="cell" id="{{ row }}_{{ col }}"></div>
         {% endif %} {% endfor %} {% endfor %}
       </div>
       <div class="button-container">
         <div>
-          <button onclick="togglePiece(1)">W Piece</button>
-          <button onclick="togglePiece(2)">+ Piece</button>
-          <button onclick="togglePiece(3)">T Piece</button>
-          <button onclick="togglePiece(4)">U Piece</button>
-          <button onclick="togglePiece(5)">L Piece</button>
-          <button onclick="togglePiece(6)">Short T Piece</button>
-          <button onclick="togglePiece(7)">Z Piece</button>
-          <button onclick="togglePiece(8)">Square Piece</button>
-          <button onclick="togglePiece(9)">Turn Piece</button>
-          <button onclick="togglePiece(10)">1 x 2</button>
-          <button onclick="togglePiece(11)">1 x 3</button>
-          <button onclick="togglePiece(12)">New Base</button>
+          <button onclick="togglePiece('W')">W (1)</button>
+          <button onclick="togglePiece('+')">+ (1)</button>
+          <button onclick="togglePiece('T')">T (1)</button>
+          <button onclick="togglePiece('U')">U (1)</button>
+          <button onclick="togglePiece('L')">L (2)</button>
+          <button onclick="togglePiece('Short T')">Short T (2)</button>
+          <button onclick="togglePiece('Z')">Z (2)</button>
+          <button onclick="togglePiece('Square')">Square (2)</button>
+          <button onclick="togglePiece('Turn')">Turn (2)</button>
+          <button onclick="togglePiece('1x2')">1x2 (2)</button>
+          <button onclick="togglePiece('1x3')">1x3 (2)</button>
+          <button onclick="togglePiece('New Base')">New Base (3)</button>
         </div>
         <div>
           <button onclick="rotateRight()">Rotate Right ↻</button>
@@ -103,23 +107,24 @@
       </div>
     </div>
     <script>
+      // pieces: type of piece, show, #
       let pieces = [
-        [1, false],
-        [2, false],
-        [3, false],
-        [4, false],
-        [5, false],
-        [6, false],
-        [7, false],
-        [8, false],
-        [9, false],
-        [10, false],
-        [11, false],
-        [12, false],
+        ["W", false, 1],
+        ["+", false, 1],
+        ["T", false, 1],
+        ["U", false, 1],
+        ["L", false, 2],
+        ["Short T", false, 2],
+        ["Z", false, 2],
+        ["Square", false, 2],
+        ["Turn", false, 2],
+        ["1x2", false, 2],
+        ["1x3", false, 2],
+        ["New Base", true, 3],
       ];
-      function togglePiece(num) {
-        pieces.forEach(([piece, show], index) => {
-          pieces[index][1] = piece === num;
+      function togglePiece(name) {
+        pieces.forEach(([piece, show, val], index) => {
+          pieces[index][1] = piece === name;
         });
       }
       function getPieceShape(piece, rotation, centerX, centerY) {
@@ -141,11 +146,33 @@
           ],
         ];
 
+        // rotate 90 degrees clockwise, selecting same squares so technically counterclock-wise
+        const N = 3;
+        for (let r = 0; r < rotate; r++) {
+          for (i = 0; i < parseInt(N / 2); i++) {
+            for (j = i; j < N - i - 1; j++) {
+              // Swap elements of each cycle
+              // in clockwise direction
+              var temp = cellsAround[i][j];
+              cellsAround[i][j] = cellsAround[N - 1 - j][i];
+              cellsAround[N - 1 - j][i] = cellsAround[N - 1 - i][N - 1 - j];
+              cellsAround[N - 1 - i][N - 1 - j] = cellsAround[j][N - 1 - i];
+              cellsAround[j][N - 1 - i] = temp;
+            }
+          }
+        }
+
         let cellShape = [];
         switch (piece) {
-          case 1:
+          case "W":
+            cellShape = [
+              cellsAround[0][0],
+              cellsAround[1][0],
+              cellsAround[2][1],
+              cellsAround[2][2],
+            ];
             break;
-          case 2:
+          case "+":
             cellShape = [
               cellsAround[0][1],
               cellsAround[1][0],
@@ -153,28 +180,60 @@
               cellsAround[2][1],
             ];
             break;
-          case 3:
+          case "T":
+            cellShape = [
+              cellsAround[0][0],
+              cellsAround[0][1],
+              cellsAround[0][2],
+              cellsAround[2][1],
+            ];
             break;
-          case 4:
+          case "U":
+            cellShape = [
+              cellsAround[0][0],
+              cellsAround[1][0],
+              cellsAround[1][2],
+              cellsAround[0][2],
+            ];
             break;
-          case 5:
+          case "L":
+            cellShape = [
+              cellsAround[0][1],
+              cellsAround[2][1],
+              cellsAround[2][2],
+            ];
             break;
-          case 6:
+          case "Short T":
+            cellShape = [
+              cellsAround[1][0],
+              cellsAround[1][2],
+              cellsAround[2][1],
+            ];
             break;
-          case 7:
+          case "Z":
+            cellShape = [
+              cellsAround[1][0],
+              cellsAround[2][1],
+              cellsAround[2][2],
+            ];
             break;
-          case 8:
+          case "Square":
+            cellShape = [
+              cellsAround[1][0],
+              cellsAround[2][0],
+              cellsAround[2][1],
+            ];
             break;
-          case 9:
+          case "Turn":
+            cellShape = [cellsAround[0][1], cellsAround[1][2]];
             break;
-          case 10:
-            cellShape = [cellsAround[Math.abs(1 - rotation)][rotation]];
-            if (rotation === 3)
-              cellShape = [cellsAround[Math.abs(1 - rotation)][1]];
+          case "1x2":
+            cellShape = [cellsAround[0][1], cellsAround[2][1]];
             break;
-          case 11:
+          case "1x3":
+            cellShape = [cellsAround[1][0]];
             break;
-          case 12:
+          case "New Base":
             break;
           default:
             null;
@@ -185,31 +244,31 @@
 
       let rotate = 0;
       function rotateRight() {
-        rotate = (rotate + 1) % 4;
-      }
-      function rotateLeft() {
         rotate--;
         if (rotate < 0) rotate = 3;
+      }
+      function rotateLeft() {
+        rotate = (rotate + 1) % 4;
       }
 
       const cells = document.querySelectorAll(".cell");
       let isPlacingPiece = false;
 
       function highlightCellAndSurrounding(cell) {
-        // console.log(cell.id);
+        const [centerX, centerY] = cell.id.split("_").map(Number);
+        let cellShape = [];
+        pieces.forEach(([piece, show, val]) => {
+          if (show && val) {
+            cellShape = getPieceShape(piece, rotate, centerX, centerY);
+          } else if (show && !val) {
+            //notification that u used all these pieces already
+          }
+        });
         const isHovering = document.createElement("div");
         const hoverId = "hover_" + cell.id; // Unique identifier for each hover element
         isHovering.classList.add("hovering");
         isHovering.setAttribute("data-hover-id", hoverId);
         cell.appendChild(isHovering);
-        const [centerX, centerY] = cell.id.split("_").map(Number);
-        let cellShape = [];
-        pieces.forEach(([piece, show]) => {
-          // console.log(piece + " " + show);
-          if (show) {
-            cellShape = getPieceShape(piece, rotate, centerX, centerY);
-          }
-        });
         cellShape.forEach((cell) => {
           if (cell) {
             const hoverDiv = document.createElement("div");
@@ -233,6 +292,43 @@
         });
       }
 
+      function checkPlayable(cellShape) {
+        // check it is touching another cell that is already placed
+        // check it is not on outer blue or out of bounds
+        // check it is not on top of another placed piece
+        let adjacent = false,
+          outOfBounds = false,
+          onTop = false;
+
+        if (cellShape.length === 1) adjacent = true;
+        for (const cell of cellShape) {
+          if (!cell || cell.classList.contains("dark-blue")) {
+            outOfBounds = true;
+            break;
+          }
+          if (cell.classList.contains("piece")) {
+            onTop = true;
+            break;
+          }
+          const [centerX, centerY] = cell.id.split("_").map(Number);
+          const surroundingCells = [
+            document.getElementById(`${centerX - 1}_${centerY}`), // top mid
+            document.getElementById(`${centerX}_${centerY - 1}`), // mid left
+            document.getElementById(`${centerX}_${centerY + 1}`), // mid right
+            document.getElementById(`${centerX + 1}_${centerY}`), // bot mid
+          ];
+          for (const surroundingCell of surroundingCells) {
+            if (
+              surroundingCell &&
+              surroundingCell.classList.contains("piece")
+            ) {
+              adjacent = true;
+            }
+          }
+        }
+        return adjacent && !outOfBounds && !onTop;
+      }
+
       function placePiece(cell) {
         const hoverId = "hover_" + cell.id; // Get the unique identifier for the hover element
         const hoverElements = document.querySelectorAll(
@@ -247,6 +343,13 @@
           }
         });
         isPlacingPiece = false;
+      }
+
+      function updateButtonLabels() {
+        const buttons = document.querySelectorAll(".button-container button");
+        buttons.forEach((button, index) => {
+          button.textContent = `${pieces[index][0]}` + ` (${pieces[index][2]})`;
+        });
       }
 
       cells.forEach((cell) => {
@@ -266,20 +369,27 @@
 
         cell.addEventListener("click", () => {
           if (!isPlacingPiece && !cell.classList.contains("piece")) {
-            cell.classList.add("piece");
             const [centerX, centerY] = cell.id.split("_").map(Number);
             let cellShape = [];
-            pieces.forEach(([piece, show]) => {
-              // console.log(piece + " " + show);
+            pieces.forEach(([piece, show, val], index) => {
               if (show) {
                 cellShape = getPieceShape(piece, rotate, centerX, centerY);
               }
             });
-            cellShape.forEach((cell) => {
-              if (cell) {
-                cell.classList.add("piece");
-              }
-            });
+            cellShape.push(cell);
+            if (checkPlayable(cellShape)) {
+              cellShape.forEach((cell) => {
+                if (cell) {
+                  cell.classList.add("piece");
+                }
+              });
+              pieces.forEach(([piece, show, val], index) => {
+                if (show) {
+                  pieces[index][2]--;
+                  updateButtonLabels();
+                }
+              });
+            }
           }
         });
       });
