@@ -32,9 +32,20 @@
         background-color: darkblue;
       }
       .piece {
-        background-color: red; /* Customize the piece color as desired */
         width: 20px;
         height: 20px;
+      }
+      .player-one {
+        background-color: red;
+      }
+      .player-two {
+        background-color: lightgreen;
+      }
+      .player-three {
+        background-color: yellow;
+      }
+      .player-four {
+        background-color: purple;
       }
       .hovering {
         background-color: rgba(
@@ -51,7 +62,6 @@
       }
       .button-container button {
         margin: 1rem;
-        background-color: #4caf50;
         color: white;
         border: none;
         padding: 10px 20px;
@@ -87,44 +97,70 @@
       </div>
       <div class="button-container">
         <div>
-          <button onclick="togglePiece('W')">W (1)</button>
-          <button onclick="togglePiece('+')">+ (1)</button>
-          <button onclick="togglePiece('T')">T (1)</button>
-          <button onclick="togglePiece('U')">U (1)</button>
-          <button onclick="togglePiece('L')">L (2)</button>
-          <button onclick="togglePiece('Short T')">Short T (2)</button>
-          <button onclick="togglePiece('Z')">Z (2)</button>
-          <button onclick="togglePiece('Square')">Square (2)</button>
-          <button onclick="togglePiece('Turn')">Turn (2)</button>
-          <button onclick="togglePiece('1x2')">1x2 (2)</button>
-          <button onclick="togglePiece('1x3')">1x3 (2)</button>
-          <button onclick="togglePiece('New Base')">New Base (3)</button>
+          <button class="player-one" onclick="togglePiece('W')">W (1)</button>
+          <button class="player-one" onclick="togglePiece('+')">+ (1)</button>
+          <button class="player-one" onclick="togglePiece('T')">T (1)</button>
+          <button class="player-one" onclick="togglePiece('U')">U (1)</button>
+          <button class="player-one" onclick="togglePiece('L')">L (2)</button>
+          <button class="player-one" onclick="togglePiece('Short T')">
+            Short T (2)
+          </button>
+          <button class="player-one" onclick="togglePiece('Z')">Z (2)</button>
+          <button class="player-one" onclick="togglePiece('Square')">
+            Square (2)
+          </button>
+          <button class="player-one" onclick="togglePiece('Turn')">
+            Turn (2)
+          </button>
+          <button class="player-one" onclick="togglePiece('1x2')">
+            1x2 (2)
+          </button>
+          <button class="player-one" onclick="togglePiece('1x3')">
+            1x3 (2)
+          </button>
+          <button class="player-one" onclick="togglePiece('New Base')">
+            New Base (3)
+          </button>
         </div>
         <div>
-          <button onclick="rotateRight()">Rotate Right ↻</button>
-          <button onclick="rotateLeft()">Rotate Left ↺</button>
+          <button class="player-one" onclick="rotateRight()">
+            Rotate Right ↻
+          </button>
+          <button class="player-one" onclick="rotateLeft()">
+            Rotate Left ↺
+          </button>
         </div>
       </div>
     </div>
     <script>
+      let players = ["player-one", "player-two", "player-three", "player-four"];
+      let playerIndex = 0;
+      let currentPlayer = players[playerIndex];
       // pieces: type of piece, show, #
       let pieces = [
-        ["W", false, 1],
-        ["+", false, 1],
-        ["T", false, 1],
-        ["U", false, 1],
-        ["L", false, 2],
-        ["Short T", false, 2],
-        ["Z", false, 2],
-        ["Square", false, 2],
-        ["Turn", false, 2],
-        ["1x2", false, 2],
-        ["1x3", false, 2],
-        ["New Base", true, 3],
+        ["W", false, 1, 1, 1, 1],
+        ["+", false, 1, 1, 1, 1],
+        ["T", false, 1, 1, 1, 1],
+        ["U", false, 1, 1, 1, 1],
+        ["L", false, 2, 2, 2, 2],
+        ["Short T", false, 2, 2, 2, 2],
+        ["Z", false, 2, 2, 2, 2],
+        ["Square", false, 2, 2, 2, 2],
+        ["Turn", false, 2, 2, 2, 2],
+        ["1x2", false, 2, 2, 2, 2],
+        ["1x3", false, 2, 2, 2, 2],
+        ["New Base", true, 3, 3, 3, 3],
       ];
       function togglePiece(name) {
-        pieces.forEach(([piece, show, val], index) => {
+        pieces.forEach(([piece, show, val1, val2, val3, val4], index) => {
           pieces[index][1] = piece === name;
+          if (
+            (val1 === 0 && playerIndex === 0) ||
+            (val2 === 0 && playerIndex === 1) ||
+            (val3 === 0 && playerIndex === 2) ||
+            (val4 === 0 && playerIndex === 3)
+          )
+            pieces[index][1] = false;
         });
       }
       function getPieceShape(piece, rotation, centerX, centerY) {
@@ -257,11 +293,9 @@
       function highlightCellAndSurrounding(cell) {
         const [centerX, centerY] = cell.id.split("_").map(Number);
         let cellShape = [];
-        pieces.forEach(([piece, show, val]) => {
-          if (show && val) {
+        pieces.forEach(([piece, show, val1, val2, val3, val4]) => {
+          if (show) {
             cellShape = getPieceShape(piece, rotate, centerX, centerY);
-          } else if (show && !val) {
-            //notification that u used all these pieces already
           }
         });
         const isHovering = document.createElement("div");
@@ -293,14 +327,21 @@
       }
 
       function checkPlayable(cellShape) {
-        // check it is touching another cell that is already placed
+        // check it is touching another cell that is your colour and already placed
         // check it is not on outer blue or out of bounds
         // check it is not on top of another placed piece
         let adjacent = false,
           outOfBounds = false,
           onTop = false;
 
-        if (cellShape.length === 1) adjacent = true;
+        if (cellShape.length === 1) {
+          adjacent = true;
+          if (
+            (pieces[11][2] >= 2 && cellShape[0].classList.contains("blue")) ||
+            pieces[11][2] <= 0
+          )
+            outOfBounds = true;
+        }
         for (const cell of cellShape) {
           if (!cell || cell.classList.contains("dark-blue")) {
             outOfBounds = true;
@@ -322,33 +363,55 @@
               surroundingCell &&
               surroundingCell.classList.contains("piece")
             ) {
-              adjacent = true;
+              if (
+                (surroundingCell.classList.contains("player-one") &&
+                  playerIndex === 0) ||
+                (surroundingCell.classList.contains("player-two") &&
+                  playerIndex === 1) ||
+                (surroundingCell.classList.contains("player-three") &&
+                  playerIndex === 2) ||
+                (surroundingCell.classList.contains("player-four") &&
+                  playerIndex === 3)
+              )
+                adjacent = true;
             }
           }
         }
         return adjacent && !outOfBounds && !onTop;
       }
 
-      function placePiece(cell) {
-        const hoverId = "hover_" + cell.id; // Get the unique identifier for the hover element
-        const hoverElements = document.querySelectorAll(
-          `[data-hover-id="${hoverId}"]`
-        );
+      // function placePiece(cell) {
+      //   const hoverId = "hover_" + cell.id; // Get the unique identifier for the hover element
+      //   const hoverElements = document.querySelectorAll(
+      //     `[data-hover-id="${hoverId}"]`
+      //   );
 
-        hoverElements.forEach((hoverElement) => {
-          if (hoverElement && hoverElement.parentNode) {
-            hoverElement.parentNode.removeChild(hoverElement);
-            hoverElement.classList.add("piece");
-            isPlacingPiece = true;
-          }
-        });
-        isPlacingPiece = false;
-      }
+      //   hoverElements.forEach((hoverElement) => {
+      //     if (hoverElement && hoverElement.parentNode) {
+      //       hoverElement.parentNode.removeChild(hoverElement);
+      //       hoverElement.classList.add("piece");
+      //       // hoverElement.classList.add(currentPlayer);
+      //       isPlacingPiece = true;
+      //     }
+      //   });
+      //   isPlacingPiece = false;
+      // }
 
       function updateButtonLabels() {
+        console.log(pieces);
         const buttons = document.querySelectorAll(".button-container button");
+        let id = playerIndex + 3,
+          nxtPlayer = players[(playerIndex + 1) % 4],
+          prvPlayer = players[playerIndex];
+        if (id > 5) id -= 4;
         buttons.forEach((button, index) => {
-          button.textContent = `${pieces[index][0]}` + ` (${pieces[index][2]})`;
+          if (button.classList.contains(prvPlayer))
+            button.classList.remove(prvPlayer);
+          if (!button.classList.contains(nxtPlayer))
+            button.classList.add(nxtPlayer);
+          if (index < pieces.length)
+            button.textContent =
+              `${pieces[index][0]}` + ` (${pieces[index][id]})`;
         });
       }
 
@@ -381,14 +444,19 @@
               cellShape.forEach((cell) => {
                 if (cell) {
                   cell.classList.add("piece");
+                  cell.classList.add(currentPlayer);
                 }
               });
               pieces.forEach(([piece, show, val], index) => {
                 if (show) {
-                  pieces[index][2]--;
+                  pieces[index][playerIndex + 2]--;
                   updateButtonLabels();
                 }
               });
+              playerIndex += 1;
+              if (playerIndex >= 4) playerIndex -= 4;
+              currentPlayer = players[playerIndex];
+              console.log(currentPlayer);
             }
           }
         });
