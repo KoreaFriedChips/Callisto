@@ -9,19 +9,19 @@ The board is a 20×20 board removing the corners (dark blue) such that an octago
 ### Start phase (placing your bases)
 
 The first 2 round start with players taking turns placing a 1x1 base. Be strategic where you place them; you cannot place them on the middle blue octagon or the dark blue triangles.
-![start phase, placing bases](/assets/images/start-phase.png)
+![start phase, placing bases](/assets/start-phase.png)
 
 ### Mid phase
 
 Select any piece and place it on the board, so long as you still have that piece in your inventory and there is at least one cell that is adjacent to another cell owned by you.
-![actions](/assets/images/actions.png)
+![actions](/assets/actions.png)
 
 Anytime after the start phase, players can place a new base anywhere they want not occupied by another piece already or the blue squares. Saving a new base can get you out of trouble, but waiting too long may leave you trapped easily.
-![new base](/assets/images/new-base.png)
+![new base](/assets/new-base.png)
 
 ### End phase
 
 Once a player gets to a point where they cannot play anymore pieces, they pass and let the other players continue. Once everyone is unable to play pieces anymore or they have already placed all their pieces, the winner is decided by who occupies the most space at the end.
-![end phase](/assets/images/end-phase.png)
+![end phase](/assets/end-phase.png)
 
 ## Have Fun!
