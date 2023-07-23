@@ -20,13 +20,6 @@ let pieces = [
 function togglePiece(name) {
   pieces.forEach(([piece, show, val1, val2, val3, val4], index) => {
     pieces[index][1] = piece === name;
-    if (
-      (val1 === 0 && playerIndex === 0) ||
-      (val2 === 0 && playerIndex === 1) ||
-      (val3 === 0 && playerIndex === 2) ||
-      (val4 === 0 && playerIndex === 3)
-    )
-      pieces[index][1] = false;
   });
 }
 function getPieceShape(piece, rotation, centerX, centerY) {
@@ -186,7 +179,7 @@ function removeHighlightFromCellAndSurrounding(cell) {
   });
 }
 
-function checkPlayable(cellShape) {
+function checkPlayable(cellShape, id) {
   // check it is touching another cell that is your colour and already placed
   // check it is not on outer blue or out of bounds
   // check it is not on top of another placed piece
@@ -204,6 +197,11 @@ function checkPlayable(cellShape) {
       console.log(curIndex + " " + pieces[11][curIndex]);
       outOfBounds = true;
     }
+  } else if (
+    (pieces[11][curIndex] >= 2 && cellShape.length >= 2) ||
+    pieces[id][curIndex] <= 0
+  ) {
+    outOfBounds = true;
   }
   for (const cell of cellShape) {
     if (!cell || cell.classList.contains("dark-blue")) {
@@ -293,13 +291,15 @@ cells.forEach((cell) => {
     if (!isPlacingPiece && !cell.classList.contains("piece")) {
       const [centerX, centerY] = cell.id.split("_").map(Number);
       let cellShape = [];
+      let id = 0;
       pieces.forEach(([piece, show, val], index) => {
         if (show) {
           cellShape = getPieceShape(piece, rotate, centerX, centerY);
+          id = index;
         }
       });
       cellShape.push(cell);
-      if (checkPlayable(cellShape)) {
+      if (checkPlayable(cellShape, id)) {
         cellShape.forEach((cell) => {
           if (cell) {
             cell.classList.add("piece");
